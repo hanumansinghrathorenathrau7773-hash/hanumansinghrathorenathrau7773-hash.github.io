@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff5fa">
+  <title>Pinklet Play — Firebase + YouTube</title>
+  <style>
+    :root{color-scheme:light;--bg:#fff7fb;--paper:#fff;--paper2:#fff0f7;--line:#f2d3e3;--text:#382638;--muted:#987b91;--pink:#f06ba8;--pink2:#ffacd1;--pinkdeep:#b93b7b;--mint:#a8ead8;--danger:#b52c56;--good:#167a5b;--shadow:0 24px 65px #a63d7420;--shadow2:0 8px 0 #f6d9e8,0 16px 30px #a63d7414}
+    *{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;color:var(--text);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 5% 0%,#ffe3f0 0,transparent 36%),radial-gradient(ellipse at 100% 20%,#e6fff7 0,transparent 28%),var(--bg)}
+    button,input,textarea{font:inherit}button{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,filter .15s ease}button:active:not(:disabled){transform:translateY(2px)}button:disabled{opacity:.58;cursor:not-allowed}input,textarea{width:100%;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:14px;outline:none;box-shadow:inset 0 2px 4px #a43f7310}input{padding:12px 14px}textarea{resize:none;min-height:47px;max-height:130px;padding:12px 14px}input:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 0 4px #f06ba81b}label{display:block;margin:13px 0 6px;color:#855a76;font-size:13px#42445A;font-weight:700}.hidden{display:none!important}.muted,small{color:var(--muted)}.tiny{font-size:12px;line-height:1.5}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px clamp(16px,4vw,46px);border-bottom:1px solid #e9bed51a;background:#ffffffa8;backdrop-filter:blur(18px)}.brand{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:850;letter-spacing:-.7px}.brand-mark{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#ffb9da,#f06ba8);color:#fff;font-size:22px;box-shadow:0 5px 0 #d95494,0 11px 20px #e76ba537;text-shadow:0 2px 4px #a72a6929}.top-note{font-size:12px;color:var(--muted);font-weight:600}.wrap{width:min(1180px,calc(100% - 28px));margin:30px auto 42px}.eyebrow{font-size:11px;letter-spacing:1.6px;color:var(--pinkdeep);font-weight:900;text-transform:uppercase}.primary{border:0;border-radius:14px;padding:12px 16px;background:linear-gradient(145deg,#ffafd2,#f06ba8 78%);color:#fff;font-weight:850;box-shadow:0 5px 0 #cb4b8b,0 11px 20px #f06ba833;text-shadow:0 1px 1px #a52c6a40}.primary:hover:not(:disabled){filter:saturate(1.08);box-shadow:0 6px 0 #cb4b8b,0 15px 25px #f06ba83d}.secondary{border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:linear-gradient(180deg,#fff,#fff4fa);color:#754763;font-weight:750;box-shadow:0 3px 0 #efd2e1}.secondary:hover:not(:disabled){background:#fff0f7}.linkbtn{border:0;padding:2px;background:transparent;color:var(--pinkdeep);text-decoration:underline;text-underline-offset:3px;font-weight:750}.full{width:100%;margin-top:17px}.status{font-size:13px;margin-top:13px;padding:11px 13px;border-radius:13px;background:#fff0f7;color:#744861;overflow-wrap:anywhere;border:1px solid #f5d7e6}.status.error{color:var(--danger);background:#fff0f3;border-color:#f4c6d2}.status.success{color:var(--good);background:#edfff8;border-color:#c2efde}.status:empty{display:none}
+    .auth-grid{display:grid;grid-template-columns:1.04fr .96fr;min-height:610px;border:1px solid #efd0e1;border-radius:30px;overflow:hidden;background:#ffffffd9;box-shadow:var(--shadow),0 7px 0 #f5dbe8;backdrop-filter:blur(10px)}.auth-art{padding:clamp(27px,5vw,58px);background:linear-gradient(145deg,#fff0f7 0%,#ffe1ef 48%,#e8fff7 100%);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.art-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(1px)}.orb-one{width:210px;height:210px;right:-38px;top:70px;background:linear-gradient(145deg,#ffadd1aa,#ffcfe300);box-shadow:inset -12px -13px 25px #e9549824,0 25px 45px #db5c9d1f}.orb-two{width:100px;height:100px;right:130px;bottom:110px;background:linear-gradient(145deg,#bbf4e7,#8fdac9);box-shadow:inset -9px -10px 16px #45b9a126,0 16px 26px #6ccbb61f}.auth-art-inner{position:relative;z-index:1}.auth-art h1{font-size:clamp(35px,4.5vw,54px);line-height:1.04;letter-spacing:-2.2px;margin:23px 0 17px;max-width:470px}.auth-art p{max-width:410px;color:#80647b;font-size:16px}.feature-list{display:grid;gap:14px;margin-top:30px;position:relative;z-index:1}.feature{display:flex;gap:11px;align-items:center;color:#634257;font-weight:650}.check{width:27px;height:27px;border-radius:10px;background:#dff9ef;color:#138065;display:grid;place-items:center;flex-shrink:0;box-shadow:0 3px 0 #bae9da}.art-foot{position:relative;z-index:1;color:#99758e;font-size:12px}.auth-panel{padding:clamp(25px,4vw,48px);display:flex;flex-direction:column;justify-content:center}.segmented{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:#fff0f7;padding:5px;border-radius:15px;border:1px solid #f2d2e2}.segmented button{background:transparent;border:0;padding:10px 8px;border-radius:11px;color:#a07d94;font-weight:750}.segmented button.active{color:#8e2c63;background:linear-gradient(180deg,#fff,#ffe4f1);box-shadow:0 3px 0 #ecc6da,0 6px 13px #b94a7b12}.auth-panel h2{font-size:27px;margin:25px 0 5px;letter-spacing:-.9px}.auth-desc{margin:0 0 21px}.form-divider{height:1px;background:linear-gradient(90deg,transparent,#efd1e1,transparent);margin:20px 0}.phone-tip{padding:12px 13px;border-radius:13px;background:#f0fffa;color:#648779;font-size:12px;margin-top:14px;border:1px solid #d4f5e9}#recaptcha-container{margin-top:12px;min-height:0;overflow:hidden;max-width:100%}
+    .app-shell{display:grid;grid-template-columns:320px minmax(0,1fr);height:min(780px,calc(100vh - 145px));min-height:580px;border:1px solid #edcddd;border-radius:27px;overflow:hidden;background:#ffffffeb;box-shadow:var(--shadow),0 6px 0 #f5dbe8}.sidebar{display:flex;flex-direction:column;border-right:1px solid #f1d8e5;min-width:0;background:linear-gradient(180deg,#fff9fc,#fff)}.side-head{padding:20px;border-bottom:1px solid #f3deea}.side-title{font-size:18px;font-weight:850;letter-spacing:-.4px}.identity{font-size:12px;color:var(--muted);margin-top:7px;overflow-wrap:anywhere}.uid-line{display:flex;align-items:center;gap:7px;margin-top:9px}.uid-line code{font-size:11px;color:#805e76;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.mini{padding:6px 9px;font-size:12px;border-radius:9px;white-space:nowrap}.contact-box{padding:15px 17px 17px;border-bottom:1px solid #f3deea}.contact-box h3{font-size:13px;margin:0 0 3px}.contact-box .muted{font-size:12px}.contact-box input{margin-top:9px}.contact-box button{margin-top:10px}.section-label{padding:15px 18px 8px;color:#ad8ba1;font-size:10px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase}.chat-list{overflow:auto;flex:1;padding:0 8px 10px}.chat-list-empty{margin:12px 9px;padding:16px;border:1px dashed #eacbdc;border-radius:15px;color:var(--muted);font-size:13px;text-align:center;background:#fff9fc}.chat-item{width:100%;display:flex;align-items:center;gap:11px;text-align:left;padding:11px 10px;border:1px solid transparent;background:transparent;color:var(--text);border-radius:15px;margin-bottom:4px}.chat-item:hover,.chat-item.active{background:linear-gradient(110deg,#fff0f7,#fff9fc);border-color:#f6d7e7;box-shadow:0 3px 0 #f3dbe7}.avatar{width:41px;height:41px;border-radius:15px;background:linear-gradient(145deg,#ffbedb,#ee72ad 70%,#e9a9cf);color:#fff;font-weight:900;display:grid;place-items:center;flex-shrink:0;box-shadow:0 4px 0 #dc8bb5;text-shadow:0 1px 2px #9f3a6e40}.chat-meta{min-width:0;flex:1}.chat-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-last{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;display:block}.side-foot{padding:12px 15px;border-top:1px solid #f1d8e5;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff8fc}.chat-pane{display:flex;flex-direction:column;min-width:0;min-height:0;background:linear-gradient(180deg,#fff,#fffafd)}.chat-head{display:flex;align-items:center;gap:12px;padding:16px 21px;border-bottom:1px solid #f1dce7;min-height:75px;background:#ffffffc9}.chat-head h3{font-size:16px;margin:0}.chat-head .muted{font-size:12px;margin-top:3px;overflow-wrap:anywhere}.conversation-placeholder{margin:auto;max-width:380px;text-align:center;padding:28px;color:var(--muted)}.placeholder-icon{font-size:42px;margin-bottom:13px;filter:drop-shadow(0 5px 5px #eeb0cf80)}.placeholder-title{color:var(--text);margin:0 0 8px;font-size:20px}.message-list{padding:22px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:11px;background-image:radial-gradient(#f7dce9 1px,transparent 1px);background-size:22px 22px;background-position:4px 4px}.date-note{text-align:center;color:#aa8ba0;font-size:11px;margin:6px 0 8px}.bubble-row{display:flex}.bubble-row.mine{justify-content:flex-end}.bubble{max-width:min(78%,560px);padding:10px 13px;border-radius:17px;background:#fff;border:1px solid #f0d9e6;box-shadow:0 4px 0 #f4e4ec,0 7px 14px #a8467310;overflow-wrap:anywhere;white-space:pre-wrap}.mine .bubble{background:linear-gradient(145deg,#ffe0ef,#ffc8e1);border-color:#f2b5d2;border-bottom-right-radius:5px;box-shadow:0 4px 0 #e8abc8,0 7px 14px #a8467310}.bubble:not(.mine .bubble){border-bottom-left-radius:5px}.bubble-time{font-size:10px;color:#9d7891;text-align:right;margin-top:5px}.message-compose{display:flex;gap:10px;padding:14px 17px;border-top:1px solid #f1dce7;align-items:flex-end;background:#fff}.send-btn{height:47px;min-width:78px}.footer-note{text-align:center;margin:19px 8px 0;color:#ab8da2;font-size:11px}.mobile-only{display:none}.app-user{display:flex;align-items:center;gap:8px}
+    .player-app{max-width:1180px;margin:0 auto;min-height:580px;border:1px solid #edcddd;border-radius:28px;overflow:hidden;background:#ffffffdf;box-shadow:var(--shadow),0 6px 0 #f5dbe8}.player-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px clamp(18px,3vw,32px);border-bottom:1px solid #f1d8e5;background:linear-gradient(115deg,#fff1f8,#fff 65%,#eafff8)}.player-welcome{display:flex;align-items:center;gap:14px;min-width:0}.player-welcome h2{margin:3px 0;font-size:clamp(21px,3vw,29px);letter-spacing:-.8px}.player-welcome p{margin:0;font-size:13px}.player-logo{display:grid;place-items:center;flex-shrink:0;width:54px;height:54px;border-radius:18px;background:linear-gradient(145deg,#ffb9da,#ee65a4);color:white;font-size:24px;box-shadow:0 5px 0 #cb4b8b,0 12px 22px #f06ba833}.player-card{padding:clamp(16px,3vw,30px)}.player-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.player-heading h2{margin:5px 0;font-size:clamp(23px,3vw,31px);letter-spacing:-1px}.player-heading p{margin:0;font-size:13px}.player-pill{white-space:nowrap;padding:9px 13px;border:1px solid #f4cfe0;border-radius:99px;background:#fff0f7;color:#b13c79;font-size:12px;font-weight:800;box-shadow:0 3px 0 #f1d6e4}.video-search{display:flex;gap:10px;margin-bottom:10px}.video-search input{min-width:0}.video-search button{min-width:112px}.player-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.8fr);gap:18px;margin-top:18px}.video-stage{min-width:0;aspect-ratio:16/9;background:linear-gradient(145deg,#fff0f7,#f0fffa);border:1px solid #efcddd;border-radius:20px;overflow:hidden;box-shadow:0 5px 0 #f2d9e6,0 14px 30px #a8467310;display:grid;place-items:center}.video-stage iframe{width:100%;height:100%;border:0;aspect-ratio:16/9}.player-placeholder{text-align:center;padding:24px;color:var(--muted)}.player-placeholder h3{margin:14px 0 5px;color:var(--text)}.player-placeholder p{margin:0;font-size:13px}.play-orb{display:grid;place-items:center;margin:auto;width:64px;height:64px;border-radius:22px;background:linear-gradient(145deg,#ffb9da,#ee65a4);color:#fff;font-size:25px;box-shadow:0 6px 0 #cb4b8b,0 12px 24px #f06ba833}.results-panel{min-width:0;border:1px solid #f0d6e4;border-radius:18px;background:#fffafd;overflow:hidden;box-shadow:0 4px 0 #f5e2eb}.results-title{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 15px;border-bottom:1px solid #f2dce7;background:#fff4fa}.video-results{max-height:420px;overflow:auto;padding:8px}.results-empty{padding:25px 12px;text-align:center;color:var(--muted);font-size:13px}.video-result{display:flex;width:100%;gap:10px;align-items:flex-start;text-align:left;padding:9px;border:1px solid transparent;border-radius:13px;background:transparent;color:var(--text);margin-bottom:5px}.video-result:hover,.video-result.active{background:#fff0f7;border-color:#f2cfe0;box-shadow:0 3px 0 #f5dce8}.video-result img{width:112px;aspect-ratio:16/9;object-fit:cover;border-radius:9px;background:#f8e4ee;flex-shrink:0}.video-result strong{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.4}.video-result small{display:block;margin-top:5px;font-size:11px}.player-footnote{margin:16px 2px 0}.player-app .status{margin-top:10px}.player-app .status:empty{display:none}
+
+    /* Polished multi-theme shell, animated page transitions and lightweight controls */
+    .top-actions{display:flex;align-items:center;gap:14px}.theme-wrap{position:relative;z-index:30}.theme-toggle{border:1px solid var(--line);border-radius:14px;padding:9px 12px;background:var(--paper);color:var(--text);font-weight:800;box-shadow:0 3px 0 var(--line);display:flex;align-items:center;gap:7px}.theme-menu{position:absolute;right:0;top:calc(100% + 12px);width:min(320px,calc(100vw - 28px));padding:15px;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:0 20px 60px #0002;animation:menuIn .18s ease-out}.theme-menu-title{display:flex;justify-content:space-between;align-items:center;font-weight:900;margin-bottom:12px}.icon-btn{border:0;background:var(--paper2);color:var(--text);border-radius:9px;width:30px;height:30px;font-size:21px}.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.theme-choice{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:9px;color:var(--text);font-size:12px;font-weight:800;text-align:left}.theme-choice[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:1px}.theme-swatch{width:25px;height:25px;border-radius:9px;flex-shrink:0;box-shadow:inset 0 -3px 0 #0002}.app-nav{display:flex;gap:8px;padding:12px clamp(14px,3vw,30px);border-bottom:1px solid var(--line);background:var(--paper);overflow-x:auto;scrollbar-width:none}.app-nav::-webkit-scrollbar{display:none}.nav-item{display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted);padding:10px 15px;font-weight:850}.nav-item.active{background:var(--paper2);border-color:var(--line);color:var(--accent);box-shadow:0 3px 0 var(--line)}.page-view{display:none;min-height:420px}.page-view.active-page{display:block;animation:pageIn .24s cubic-bezier(.2,.7,.2,1) both}.feature-page{padding:clamp(22px,4vw,42px);min-height:470px}.feature-page h2{font-size:clamp(27px,4vw,38px);letter-spacing:-1.4px;margin:8px 0}.feature-page>p{margin-top:0}.music-note{color:var(--accent)}.music-card{display:grid;grid-template-columns:minmax(180px,.8fr) 1.2fr;gap:25px;align-items:center;padding:clamp(16px,3vw,30px);margin-top:26px;border:1px solid var(--line);border-radius:25px;background:var(--paper);box-shadow:0 6px 0 var(--line),var(--shadow)}.music-art{aspect-ratio:1;max-width:310px;width:100%;margin:auto;border-radius:23px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;background:radial-gradient(circle at 30% 25%,var(--accent2),transparent 45%),linear-gradient(145deg,var(--paper2),var(--accent));box-shadow:inset 0 0 0 1px #ffffff70,0 12px 28px #0001}.music-art>span{font-size:clamp(55px,9vw,90px);color:white;text-shadow:0 5px 15px #0002;z-index:2}.music-art i{position:absolute;bottom:20%;width:7px;height:25%;border-radius:9px;background:#ffffff80;animation:equalize 1.2s ease-in-out infinite alternate}.music-art i:nth-of-type(1){left:20%;height:14%;animation-delay:-.4s}.music-art i:nth-of-type(2){left:30%;height:29%;animation-delay:-.8s}.music-art i:nth-of-type(3){left:70%;height:20%;animation-delay:-.2s}.music-art i:nth-of-type(4){left:80%;height:34%;animation-delay:-.6s}.music-art i:nth-of-type(5){left:90%;height:16%;animation-delay:-.9s}.music-meta h3{font-size:clamp(22px,3vw,30px);margin:9px 0;overflow-wrap:anywhere}.music-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.info-note{margin-top:22px;padding:14px 16px;border:1px solid var(--line);border-radius:15px;background:var(--paper2);color:var(--muted);font-size:13px;line-height:1.6}.discovery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:25px}.discovery-card{min-height:150px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;padding:20px;border:1px solid var(--line);border-radius:20px;background:var(--paper);color:var(--text);text-align:left;box-shadow:0 4px 0 var(--line);transition:transform .16s ease,box-shadow .16s ease}.discovery-card:hover{transform:translateY(-3px);box-shadow:0 7px 0 var(--line)}.discovery-card>span{font-size:27px}.discovery-card strong{font-size:15px}.discovery-card small{font-size:12px}.settings-list{display:grid;gap:10px;margin-top:24px}.setting-row{width:100%;display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--text);text-align:left}.setting-row>span:nth-child(2){flex:1;min-width:0}.setting-row strong,.setting-row small{display:block}.setting-row small{font-size:12px;margin-top:4px}.setting-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:var(--paper2);color:var(--accent);font-size:20px;flex-shrink:0}.setting-state{font-size:11px;color:var(--muted);text-align:right}.static-row{cursor:default}.mini-player{display:flex;align-items:center;gap:12px;position:sticky;bottom:10px;margin:0 16px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:17px;background:var(--paper);box-shadow:0 10px 35px #0001;z-index:5}.mini-art{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--accent);color:#fff;font-size:20px;flex-shrink:0}.mini-info{min-width:0;flex:1}.mini-info strong,.mini-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mini-info strong{font-size:12px}.mini-info small{font-size:10px;color:var(--muted)}
+    @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@keyframes menuIn{from{opacity:0;transform:translateY(-5px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes equalize{from{transform:scaleY(.45);opacity:.6}to{transform:scaleY(1);opacity:1}}
+    body[data-theme="rose"]{--bg:#fff7fb;--paper:#fff;--paper2:#fff0f7;--line:#f2d3e3;--text:#382638;--muted:#987b91;--accent:#e85c9c;--accent2:#ffc3df;--shadow:0 24px 65px #a63d7420;--pink:#e85c9c}
+    body[data-theme="ocean"]{--bg:#eff9ff;--paper:#fff;--paper2:#e1f3ff;--line:#bcdff4;--text:#15344b;--muted:#65869c;--accent:#168bc2;--accent2:#9be5ff;--shadow:0 24px 65px #17628b20}
+    body[data-theme="lavender"]{--bg:#f8f4ff;--paper:#fff;--paper2:#eee5ff;--line:#d9c9f5;--text:#35264c;--muted:#8a79a3;--accent:#8b65d6;--accent2:#d6c2ff;--shadow:0 24px 65px #7047a820}
+    body[data-theme="forest"]{--bg:#f1faf3;--paper:#fff;--paper2:#e0f4e5;--line:#c2e2ca;--text:#1f3d2b;--muted:#6c8c76;--accent:#2f9860;--accent2:#a9e8bb;--shadow:0 24px 65px #1b694020}
+    body[data-theme="sunset"]{--bg:#fff5ed;--paper:#fff;--paper2:#ffe8d8;--line:#f3d0b6;--text:#4c2c26;--muted:#a17d71;--accent:#ed7848;--accent2:#ffc49b;--shadow:0 24px 65px #a94e2420}
+    body[data-theme="midnight"]{color-scheme:dark;--bg:#101321;--paper:#1a1e30;--paper2:#262c43;--line:#363d59;--text:#f2f3ff;--muted:#a1a9c5;--accent:#9d8cff;--accent2:#554b91;--shadow:0 24px 65px #0005}
+    body[data-theme="mint"]{--bg:#effcf9;--paper:#fff;--paper2:#ddf8f0;--line:#bdeade;--text:#173e3a;--muted:#6b918b;--accent:#20a995;--accent2:#a2f0df;--shadow:0 24px 65px #1a897820}
+    body[data-theme="gold"]{--bg:#fffbed;--paper:#fff;--paper2:#fff3c9;--line:#eddfa7;--text:#45381b;--muted:#99865a;--accent:#bf8a18;--accent2:#ffe18a;--shadow:0 24px 65px #956c1220}
+    body[data-theme="mono"]{--bg:#f4f4f4;--paper:#fff;--paper2:#e9e9e9;--line:#d2d2d2;--text:#222;--muted:#777;--accent:#333;--accent2:#bbb;--shadow:0 24px 65px #0001}
+    body[data-theme="cyber"]{--bg:#0c111c;--paper:#141d2c;--paper2:#1d2b3c;--line:#2b4a5b;--text:#e7fbff;--muted:#91b8c5;--accent:#00cdbb;--accent2:#126c79;--shadow:0 24px 65px #00cdbb18}
+    body[data-theme="midnight"],body[data-theme="cyber"]{color:var(--text)}
+    body[data-theme="midnight"] .topbar,body[data-theme="cyber"] .topbar,body[data-theme="midnight"] .player-top,body[data-theme="cyber"] .player-top{background:var(--paper)}
+    body[data-theme="midnight"] .auth-grid,body[data-theme="cyber"] .auth-grid,body[data-theme="midnight"] .player-app,body[data-theme="cyber"] .player-app{background:var(--paper);border-color:var(--line)}
+    body[data-theme="midnight"] .auth-art,body[data-theme="cyber"] .auth-art{background:linear-gradient(145deg,var(--paper2),var(--paper))}
+    body[data-theme="midnight"] input,body[data-theme="cyber"] input,body[data-theme="midnight"] textarea,body[data-theme="cyber"] textarea{background:var(--bg);color:var(--text);border-color:var(--line)}
+    body[data-theme="midnight"] .video-stage,body[data-theme="cyber"] .video-stage{background:var(--paper2)}
+    body[data-theme="midnight"] .results-panel,body[data-theme="cyber"] .results-panel{background:var(--paper)}
+    body[data-theme="midnight"] .results-title,body[data-theme="cyber"] .results-title{background:var(--paper2)}
+    body[data-theme="midnight"] .secondary,body[data-theme="cyber"] .secondary{background:var(--paper2);color:var(--text);border-color:var(--line);box-shadow:0 3px 0 var(--line)}
+    body:not([data-theme="rose"]) .eyebrow{color:var(--accent)}body:not([data-theme="rose"]) .nav-item.active{color:var(--accent)}
+    body[data-theme]{background:var(--bg)}
+    body[data-theme] .primary{background:linear-gradient(145deg,var(--accent2),var(--accent) 78%);box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 75%,#000),0 11px 20px color-mix(in srgb,var(--accent) 22%,transparent)}
+    body[data-theme] .brand-mark,body[data-theme] .player-logo,body[data-theme] .play-orb{background:linear-gradient(145deg,var(--accent2),var(--accent));box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 75%,#000),0 11px 20px color-mix(in srgb,var(--accent) 22%,transparent)}
+    body[data-theme] .secondary{background:var(--paper);color:var(--text);border-color:var(--line);box-shadow:0 3px 0 var(--line)}
+    body[data-theme] .player-card,body[data-theme] .results-panel,body[data-theme] .music-card,body[data-theme] .discovery-card,body[data-theme] .setting-row{background:var(--paper);border-color:var(--line)}
+    body[data-theme] .results-title,body[data-theme] .status,body[data-theme] .player-pill,body[data-theme] .info-note{background:var(--paper2);border-color:var(--line);color:var(--text)}
+    body[data-theme] .video-result:hover,body[data-theme] .video-result.active,body[data-theme] .nav-item.active{background:var(--paper2);border-color:var(--line)}
+    body[data-theme] .theme-toggle,body[data-theme] .theme-menu,body[data-theme] .theme-choice,body[data-theme] .mini-player{background:var(--paper);color:var(--text);border-color:var(--line)}
+    body[data-theme] .topbar,body[data-theme] .app-nav{background:var(--paper);border-color:var(--line)}
+    body[data-theme] .auth-grid,body[data-theme] .player-app{border-color:var(--line)}
+
+    @media(max-width:790px){.top-actions{gap:7px}.theme-toggle{padding:8px 10px}.theme-toggle span{display:none}.theme-menu{right:-3px}.app-nav{gap:4px;padding:9px}.nav-item{padding:9px 12px;font-size:13px}.music-card{grid-template-columns:1fr;gap:18px}.music-art{max-width:210px}.music-meta{text-align:center}.music-actions{justify-content:center}.discovery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.discovery-card{min-height:125px;padding:15px}.feature-page{padding:22px 16px;min-height:0}.mini-player{margin:0 9px 10px}.setting-state{max-width:88px}}
+    @media(prefers-reduced-motion:reduce){.page-view.active-page,.theme-menu,.music-art i{animation:none!important}.discovery-card:hover{transform:none}}
+
+    @media(max-width:790px){.player-app{min-height:0;border-radius:18px}.player-top{padding:16px}.player-logo{width:45px;height:45px;border-radius:15px}.player-heading{align-items:flex-start}.player-pill{display:none}.player-layout{grid-template-columns:1fr;gap:14px}.video-results{max-height:330px}.video-result img{width:100px}.video-search{gap:7px}.video-search button{min-width:88px;padding-inline:12px}.player-card{padding:15px}.auth-grid{grid-template-columns:1fr;min-height:0}.auth-art{display:none}.auth-panel{padding:25px}.topbar{padding:13px 15px}.top-note{display:none}.wrap{width:calc(100% - 14px);margin:10px auto 18px}.app-shell{grid-template-columns:1fr;height:calc(100dvh - 95px);min-height:500px;border-radius:19px}.sidebar{display:flex;border:0}.chat-pane{display:none}.app-shell.chat-open .sidebar{display:none}.app-shell.chat-open .chat-pane{display:flex}.side-head{padding:13px 15px}.contact-box{padding:11px 15px 13px}.section-label{padding-top:11px}.chat-list{max-height:calc(100dvh - 315px)}.chat-head{padding:11px 13px}.message-list{padding:14px}.message-compose{padding:10px}.mobile-only{display:inline-flex}.side-foot{padding:9px 12px}.auth-panel h2{font-size:25px}.footer-note{margin-top:12px}.message-compose textarea{font-size:16px}}
+    @media(min-width:791px) and (max-width:1020px){.app-shell{grid-template-columns:285px minmax(0,1fr)}.side-head{padding:16px}.contact-box{padding:13px}.message-list{padding:16px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+
+    /* Pinklet Atelier — calm, layered, premium-feeling surfaces. Motion uses opacity/transform only. */
+    :root { --ease-soft:cubic-bezier(.16,1,.3,1); --radius-lg:28px; }
+    html { scroll-behavior:smooth; scroll-padding-top:18px; }
+    body[data-theme] {
+      background:
+        radial-gradient(ellipse at 6% 0%, color-mix(in srgb, var(--accent2) 34%, transparent), transparent 34%),
+        radial-gradient(ellipse at 100% 18%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 30%),
+        var(--bg);
+      color:var(--text);
+      transition:background-color .42s ease,color .42s ease;
+    }
+    body[data-theme="midnight"], body[data-theme="cyber"] {
+      background:
+        radial-gradient(ellipse at 7% 0%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 36%),
+        radial-gradient(ellipse at 100% 20%, color-mix(in srgb, var(--accent2) 15%, transparent), transparent 30%),
+        var(--bg);
+    }
+    .topbar {
+      position:relative; z-index:50; min-height:74px;
+      padding:16px clamp(16px,4vw,46px); padding-right:clamp(155px,17vw,220px);
+      background:color-mix(in srgb,var(--paper) 82%,transparent);
+      border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);
+      box-shadow:0 10px 38px color-mix(in srgb,var(--accent) 5%,transparent);
+    }
+    .brand { font-size:22px; letter-spacing:-.9px; gap:12px; }
+    .brand-mark { width:43px;height:43px;border-radius:16px;font-size:21px;transform:rotate(-5deg); }
+    .top-note { color:var(--muted); }
+    .wrap { width:min(1180px,calc(100% - 34px)); margin:34px auto 50px; }
+    .theme-wrap { position:fixed;top:13px;right:clamp(12px,2.6vw,30px);z-index:1000; }
+    .theme-toggle {
+      min-height:45px; min-width:96px; justify-content:center; padding:10px 14px;
+      border-radius:15px; border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line));
+      background:color-mix(in srgb,var(--paper) 94%,transparent); color:var(--text);
+      box-shadow:0 3px 0 var(--line),0 8px 22px color-mix(in srgb,var(--accent) 12%,transparent);
+      backdrop-filter:blur(16px); transition:transform .32s var(--ease-soft),box-shadow .32s ease,background .32s ease;
+    }
+    .theme-toggle:hover { transform:translateY(-2px);box-shadow:0 5px 0 var(--line),0 12px 28px color-mix(in srgb,var(--accent) 16%,transparent); }
+    .theme-toggle:focus-visible,.theme-choice:focus-visible,.nav-item:focus-visible,button:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 55%,white);outline-offset:3px; }
+    .theme-menu {
+      position:fixed;top:68px;right:clamp(12px,2.6vw,30px);width:min(354px,calc(100vw - 24px));
+      max-height:calc(100dvh - 84px);overflow:auto;overscroll-behavior:contain;
+      padding:18px;border-radius:24px;border:1px solid var(--line);background:var(--paper);color:var(--text);
+      box-shadow:0 24px 70px color-mix(in srgb,#000 16%,transparent),0 4px 0 var(--line);
+      animation:menuIn .52s var(--ease-soft) both; transform-origin:top right;
+    }
+    .theme-menu-title { font-size:17px;letter-spacing:-.35px;gap:12px; }
+    .theme-menu-sub { margin:-5px 0 14px;font-size:12px;color:var(--muted); }
+    .theme-grid { grid-template-columns:1fr 1fr;gap:9px; }
+    .theme-choice {
+      min-height:54px;padding:9px 10px;border-radius:15px;border-color:var(--line);background:var(--paper);
+      transition:transform .34s var(--ease-soft),background-color .3s ease,border-color .3s ease,box-shadow .34s ease;
+    }
+    .theme-choice:hover { transform:translateY(-2px);background:var(--paper2);box-shadow:0 5px 12px color-mix(in srgb,var(--accent) 10%,transparent); }
+    .theme-choice[aria-pressed="true"] { outline:2px solid var(--accent);outline-offset:1px;background:var(--paper2); }
+    .theme-choice[aria-pressed="true"]::after { content:"✓";margin-left:auto;color:var(--accent);font-size:14px;font-weight:950; }
+    .theme-swatch { width:28px;height:28px;border-radius:10px;box-shadow:inset 0 -3px 0 #0002,0 3px 6px #0000000a; }
+    .icon-btn { border:1px solid var(--line);background:var(--paper2);transition:transform .3s var(--ease-soft); }
+    .icon-btn:hover { transform:rotate(90deg); }
+    .auth-grid,.player-app {
+      border:1px solid var(--line);border-radius:32px;overflow:clip;
+      background:color-mix(in srgb,var(--paper) 94%,transparent);
+      box-shadow:0 30px 90px color-mix(in srgb,var(--accent) 11%,transparent),0 5px 0 var(--line);
+      backdrop-filter:blur(18px);
+    }
+    .auth-grid { grid-template-columns:1.02fr .98fr;min-height:640px; }
+    .auth-art {
+      padding:clamp(30px,5vw,62px);
+      background:linear-gradient(145deg,color-mix(in srgb,var(--accent2) 50%,var(--paper2)),var(--paper) 68%,color-mix(in srgb,var(--accent) 9%,var(--paper)));
+    }
+    .orb-one { width:270px;height:270px;right:-72px;top:50px;background:radial-gradient(circle at 32% 28%,color-mix(in srgb,var(--accent2) 85%,white),color-mix(in srgb,var(--accent) 36%,transparent) 60%,transparent 74%);box-shadow:inset -12px -13px 25px color-mix(in srgb,var(--accent) 10%,transparent),0 24px 55px color-mix(in srgb,var(--accent) 10%,transparent); }
+    .orb-two { width:114px;height:114px;right:120px;bottom:120px;background:linear-gradient(145deg,var(--paper),var(--accent2));box-shadow:inset -9px -10px 16px color-mix(in srgb,var(--accent) 13%,transparent),0 16px 28px color-mix(in srgb,var(--accent) 12%,transparent); }
+    .auth-art h1 { font-size:clamp(40px,5vw,64px);line-height:1.01;letter-spacing:-2.9px;margin:28px 0 19px;max-width:500px; }
+    .auth-art h1 em { font-style:normal;color:var(--accent); }
+    .auth-art p { max-width:410px;color:var(--muted);line-height:1.8;font-size:16px; }
+    .feature-list { gap:13px;margin-top:32px; }
+    .feature { color:var(--text);font-size:14px; }
+    .check { width:29px;height:29px;border-radius:11px;background:var(--paper);color:var(--accent);box-shadow:0 3px 0 var(--line); }
+    .art-foot { color:var(--muted);letter-spacing:.5px;font-size:10px;font-weight:850; }
+    .auth-panel { padding:clamp(28px,4vw,52px); }
+    .auth-panel h2 { font-size:clamp(27px,3vw,34px);letter-spacing:-1.25px;margin:27px 0 7px; }
+    .auth-desc { line-height:1.7;margin-bottom:23px; }
+    .segmented { gap:6px;padding:5px;background:var(--paper2);border-color:var(--line); }
+    .segmented button { padding:11px 8px;color:var(--muted);transition:background .35s ease,color .35s ease,transform .35s var(--ease-soft); }
+    .segmented button.active { background:var(--paper);color:var(--accent);box-shadow:0 2px 0 var(--line),0 7px 18px color-mix(in srgb,var(--accent) 8%,transparent); }
+    label { color:var(--muted);font-size:12px;letter-spacing:.25px;margin-top:16px; }
+    input,textarea { border-color:var(--line);background:var(--paper);color:var(--text);border-radius:15px;min-height:47px;transition:box-shadow .28s ease,border-color .28s ease,background .28s ease; }
+    input:focus,textarea:focus { border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 14%,transparent); }
+    .primary { border-radius:15px;background:linear-gradient(135deg,var(--accent2),var(--accent) 78%);box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 78%,#000),0 12px 26px color-mix(in srgb,var(--accent) 18%,transparent);transition:transform .35s var(--ease-soft),box-shadow .35s ease,filter .35s ease; }
+    .primary:hover:not(:disabled) { transform:translateY(-2px);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 78%,#000),0 17px 32px color-mix(in srgb,var(--accent) 22%,transparent); }
+    .secondary { background:var(--paper);color:var(--text);border-color:var(--line);border-radius:14px;box-shadow:0 3px 0 var(--line);transition:transform .32s var(--ease-soft),background .3s ease,box-shadow .3s ease; }
+    .secondary:hover:not(:disabled) { transform:translateY(-2px);background:var(--paper2); }
+    .linkbtn { color:var(--accent); }
+    .status,.phone-tip,.info-note { border-color:var(--line);background:var(--paper2);color:var(--text);border-radius:15px; }
+    .status.error { background:color-mix(in srgb,#ff4566 9%,var(--paper));color:#b52c56; }
+    .status.success { background:color-mix(in srgb,#20a980 10%,var(--paper));color:var(--text); }
+    .player-app { min-height:0; }
+    .player-top { padding:24px clamp(18px,3vw,36px);background:linear-gradient(115deg,var(--paper2),var(--paper) 62%,color-mix(in srgb,var(--accent2) 19%,var(--paper)));border-color:var(--line); }
+    .player-logo { width:56px;height:56px;border-radius:19px; }
+    .player-top h2 { letter-spacing:-1px; }
+    .app-nav { position:sticky;top:0;z-index:20;padding:12px clamp(14px,3vw,30px);gap:8px;background:color-mix(in srgb,var(--paper) 94%,transparent);border-color:var(--line);backdrop-filter:blur(12px); }
+    .nav-item { min-height:43px;border-radius:14px;padding:10px 17px;color:var(--muted);transition:transform .4s var(--ease-soft),background .35s ease,color .35s ease,border-color .35s ease; }
+    .nav-item:hover { transform:translateY(-1px); }
+    .nav-item.active { background:var(--paper2);border-color:var(--line);color:var(--accent);box-shadow:0 3px 0 var(--line); }
+    .page-view { min-height:420px; }
+    .page-view.active-page { animation:pageIn .72s var(--ease-soft) both; }
+    .player-card { padding:clamp(20px,3.4vw,38px); }
+    .player-heading h2 { font-size:clamp(27px,3.2vw,39px);letter-spacing:-1.4px; }
+    .player-heading p { line-height:1.7; }
+    .player-pill { border-color:var(--line);background:var(--paper2);color:var(--accent);box-shadow:0 3px 0 var(--line); }
+    .video-search { gap:12px;margin:23px 0 12px; }
+    .video-search input { min-width:0;flex:1; }
+    .video-search button { min-width:118px; }
+    .video-stage { border-radius:24px;border-color:var(--line);background:var(--paper2);box-shadow:0 5px 0 var(--line),0 18px 42px color-mix(in srgb,var(--accent) 8%,transparent); }
+    .play-orb { width:76px;height:76px;border-radius:26px;font-size:27px;transition:transform .55s var(--ease-soft); }
+    .video-stage:hover .play-orb { transform:scale(1.06) rotate(-4deg); }
+    .results-panel { border-radius:21px;background:var(--paper);border-color:var(--line);box-shadow:0 4px 0 var(--line); }
+    .results-title { padding:16px;background:var(--paper2);border-color:var(--line); }
+    .video-results { max-height:490px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent; }
+    .video-result { border-radius:15px;padding:10px;margin-bottom:7px;transition:transform .32s var(--ease-soft),background .3s ease,border-color .3s ease; }
+    .video-result:hover { transform:translateX(2px);background:var(--paper2);border-color:var(--line); }
+    .video-result.active { background:var(--paper2);border-color:var(--line); }
+    .video-result img { border-radius:11px; }
+    .feature-page { padding:clamp(26px,4vw,48px); }
+    .feature-page h2 { font-size:clamp(30px,4.3vw,44px);letter-spacing:-1.8px;line-height:1.12; }
+    .feature-page>p { line-height:1.8; }
+    .music-card { border-color:var(--line);border-radius:30px;background:linear-gradient(140deg,var(--paper),var(--paper2));box-shadow:0 5px 0 var(--line),0 22px 48px color-mix(in srgb,var(--accent) 9%,transparent);padding:clamp(18px,3.4vw,36px); }
+    .music-art { border-radius:29px;box-shadow:inset 0 0 0 1px #ffffff70,0 18px 38px color-mix(in srgb,var(--accent) 17%,transparent); }
+    .music-art>span { animation:noteFloat 3.4s var(--ease-soft) infinite alternate; }
+    .music-art i { transform-origin:bottom;animation:equalize 2.6s ease-in-out infinite alternate; }
+    .music-meta h3 { letter-spacing:-1px;line-height:1.2; }
+    .music-actions button { min-height:46px; }
+    .info-note { line-height:1.75;padding:16px 18px; }
+    .discovery-grid { gap:15px; }
+    .discovery-card { position:relative;isolation:isolate;overflow:hidden;min-height:166px;border-radius:23px;padding:22px;background:linear-gradient(145deg,var(--paper),var(--paper2));box-shadow:0 4px 0 var(--line);transition:transform .46s var(--ease-soft),box-shadow .46s ease,border-color .35s ease; }
+    .discovery-card::before { content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--accent2) 44%,transparent),transparent 57%);opacity:.6;transition:opacity .45s ease; }
+    .discovery-card:hover { transform:translateY(-4px) scale(1.008);box-shadow:0 8px 0 var(--line),0 18px 30px color-mix(in srgb,var(--accent) 10%,transparent); }
+    .discovery-card:hover::before { opacity:1; }
+    .discovery-card>span { display:grid;place-items:center;width:49px;height:49px;border-radius:17px;background:var(--paper2);border:1px solid var(--line);box-shadow:0 3px 0 var(--line); }
+    .discovery-card strong { font-size:16px;letter-spacing:-.25px; }
+    .settings-list { gap:12px; }
+    .setting-row { border-color:var(--line);border-radius:19px;padding:17px;background:var(--paper);transition:transform .38s var(--ease-soft),box-shadow .38s ease,border-color .3s ease; }
+    button.setting-row:hover { transform:translateY(-2px);box-shadow:0 5px 0 var(--line); }
+    .setting-icon { background:var(--paper2);color:var(--accent);border:1px solid var(--line);border-radius:15px;box-shadow:0 3px 0 var(--line); }
+    .mini-player { position:sticky;bottom:12px;margin:0 18px 18px;border-radius:20px;border-color:var(--line);background:color-mix(in srgb,var(--paper) 94%,transparent);box-shadow:0 15px 44px color-mix(in srgb,#000 10%,transparent);backdrop-filter:blur(18px); }
+    .mini-art { border-radius:14px;background:linear-gradient(145deg,var(--accent2),var(--accent)); }
+    .footer-note { color:var(--muted);letter-spacing:.35px;margin-bottom:24px; }
+    @keyframes pageIn { from { opacity:0;transform:translate3d(0,22px,0) scale(.99); } 68% { opacity:1; } to { opacity:1;transform:translate3d(0,0,0) scale(1); } }
+    @keyframes menuIn { from { opacity:0;transform:translate3d(0,-10px,0) scale(.97); } 70% { opacity:1; } to { opacity:1;transform:translate3d(0,0,0) scale(1); } }
+    @keyframes equalize { from { transform:scaleY(.38);opacity:.48; } to { transform:scaleY(1);opacity:1; } }
+    @keyframes noteFloat { from { transform:translate3d(0,3px,0) rotate(-4deg); } to { transform:translate3d(0,-5px,0) rotate(4deg); } }
+    @media(max-width:790px) {
+      .topbar { padding:13px 15px;padding-right:74px;min-height:66px; }
+      .brand { font-size:19px;gap:9px; }
+      .brand-mark { width:38px;height:38px;border-radius:14px; }
+      .theme-wrap { top:10px;right:10px; }
+      .theme-toggle { min-width:44px;width:44px;height:44px;padding:0;border-radius:15px;font-size:17px; }
+      .theme-toggle span { display:none; }
+      .theme-menu { top:62px;right:10px;width:min(340px,calc(100vw - 20px));max-height:calc(100dvh - 74px);padding:14px;border-radius:22px; }
+      .theme-grid { gap:8px; }
+      .theme-choice { font-size:11px;min-height:50px;padding:8px;gap:7px; }
+      .theme-swatch { width:24px;height:24px; }
+      .wrap { width:calc(100% - 16px);margin:16px auto 28px; }
+      .auth-grid,.player-app { border-radius:23px; }
+      .auth-panel { padding:26px 21px; }
+      .auth-grid { min-height:0; }
+      .auth-art { display:none; }
+      .player-top { padding:18px 15px; }
+      .player-logo { width:46px;height:46px;border-radius:16px; }
+      .player-top h2 { font-size:21px; }
+      .app-nav { padding:9px 8px;gap:4px; }
+      .nav-item { flex:1;gap:5px;padding:10px 7px;min-height:42px;font-size:12px; }
+      .nav-item>span { white-space:nowrap; }
+      .player-card { padding:19px 15px; }
+      .player-heading { gap:10px; }
+      .player-heading h2 { font-size:29px; }
+      .video-search { margin-top:19px; }
+      .video-search button { min-width:88px;padding-inline:12px; }
+      .video-result img { width:104px; }
+      .video-results { max-height:390px; }
+      .feature-page { padding:25px 17px; }
+      .music-card { grid-template-columns:minmax(0,1fr);gap:20px; }
+      .music-art { max-width:235px; }
+      .music-meta { text-align:center; }
+      .music-actions { justify-content:center; }
+      .discovery-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+      .discovery-card { min-height:144px;padding:15px;border-radius:19px; }
+      .discovery-card>span { width:43px;height:43px;border-radius:15px; }
+      .setting-row { padding:13px;gap:10px; }
+      .setting-state { max-width:78px;font-size:10px; }
+      .mini-player { margin:0 9px 10px;bottom:7px; }
+    }
+    @media(max-width:370px) {
+      .brand { font-size:17px; }
+      .nav-item { font-size:11px; }
+      .nav-item>span { font-size:10px; }
+      .theme-grid { grid-template-columns:1fr; }
+      .player-heading h2 { font-size:26px; }
+      .video-search button { min-width:78px;font-size:13px; }
+      .video-result img { width:88px; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      .page-view.active-page,.theme-menu,.music-art i,.music-art>span { animation:none!important; }
+      .discovery-card:hover,.video-result:hover,.theme-choice:hover,.secondary:hover,.primary:hover { transform:none; }
+    }
+
+    /* Performance pass: prioritize touch scrolling over decorative effects. */
+    html { scroll-behavior:auto !important; scroll-padding-top:10px; }
+    body { background:var(--bg) !important; background-image:none !important; }
+    .topbar,.auth-grid,.player-app,.mini-player,.theme-menu,.app-nav,.player-top,
+    .music-card,.video-stage,.results-panel,.discovery-card,.setting-row,
+    .brand-mark,.player-logo,.play-orb,.music-art,.theme-toggle,.primary,.secondary {
+      backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+    }
+    .art-orb { filter:none !important; }
+    .topbar,.auth-grid,.player-app,.music-card,.video-stage,.results-panel,
+    .discovery-card,.setting-row,.mini-player,.theme-menu {
+      box-shadow:0 1px 0 var(--line) !important;
+    }
+    button,.nav-item,.video-result,.theme-choice,.setting-row,input,textarea {
+      transition:background-color .14s ease,color .14s ease,border-color .14s ease,opacity .14s ease,transform .14s ease !important;
+    }
+    .page-view.active-page { animation:pageIn .16s ease-out both !important; }
+    @keyframes pageIn { from { opacity:.72;transform:translate3d(0,5px,0); } to { opacity:1;transform:translate3d(0,0,0); } }
+    .music-art>span,.music-art i { animation:none !important; }
+    .discovery-card:hover,.video-result:hover,.theme-choice:hover,.setting-row:hover,
+    .primary:hover:not(:disabled),.secondary:hover:not(:disabled),.theme-toggle:hover {
+      transform:none !important; filter:none !important;
+    }
+    .video-results { overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+    @media(max-width:790px) {
+      body { background:var(--bg) !important; }
+      .topbar,.player-top,.app-nav { background:var(--paper) !important; }
+      .auth-grid,.player-app { box-shadow:0 1px 0 var(--line) !important; }
+      .theme-menu { box-shadow:0 8px 24px #00000012 !important; }
+      .page-view.active-page { animation:pageIn .12s ease-out both !important; }
+      .video-results { max-height:340px; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after { animation:none !important;transition:none !important;scroll-behavior:auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">✳</span><span>Pinklet Play</span></div>
+    <div class="top-actions"><div class="top-note">Sign in first · Then search and watch YouTube</div><div class="theme-wrap"><button id="themeToggle" class="theme-toggle" type="button" aria-expanded="false" aria-controls="themeMenu" title="Choose theme">✦ <span>Themes</span></button><div id="themeMenu" class="theme-menu hidden" role="dialog" aria-label="Choose a theme"><div class="theme-menu-title">Choose your vibe <button id="closeThemeMenu" class="icon-btn" type="button" aria-label="Close themes">×</button></div><p class="theme-menu-sub">Ten palettes · saved on this device</p><div class="theme-grid" id="themeGrid"></div></div></div></div>
+  </header>
+  <main class="wrap">
+    <section id="authScreen" class="auth-grid">
+      <div class="auth-art">
+        <div class="art-orb orb-one"></div><div class="art-orb orb-two"></div>
+        <div class="auth-art-inner">
+          <div class="eyebrow">YOUR PERSONAL LISTENING SPACE</div>
+          <h1>Find your next<br><em>favorite sound.</em></h1>
+          <p>A softer corner of the internet for the songs, mixes, videos and sounds you want to come back to.</p>
+          <div class="feature-list">
+            <div class="feature"><span class="check">✓</span><span>Secure email sign-in</span></div>
+            <div class="feature"><span class="check">✓</span><span>Mobile sign-in with SMS code</span></div>
+            <div class="feature"><span class="check">✓</span><span>YouTube search and playback</span></div>
+          </div>
+        </div>
+        <div class="art-foot">MAKE ROOM FOR YOUR NEXT FAVORITE.</div>
+      </div>
+      <div class="auth-panel">
+        <div class="segmented" aria-label="Authentication method"><button id="emailMethodBtn" class="active" type="button">Email</button><button id="phoneMethodBtn" type="button">Mobile OTP</button></div>
+        <h2 id="authHeading">Welcome back</h2>
+        <p id="authDescription" class="muted auth-desc">Sign in to tune into your own little world.</p>
+        <div id="emailPanel">
+          <div class="segmented" style="margin-bottom:14px" aria-label="Email account action"><button id="loginModeBtn" class="active" type="button">Log in</button><button id="signupModeBtn" type="button">Create account</button></div>
+          <form id="emailAuthForm" novalidate>
+            <div id="emailNameWrap" class="hidden"><label for="emailName">Display name</label><input id="emailName" autocomplete="name" maxlength="80" placeholder="e.g. Aryan"></div>
+            <label for="emailInput">Email address</label><input id="emailInput" type="email" autocomplete="email" required placeholder="you@example.com">
+            <label for="passwordInput">Password</label><input id="passwordInput" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+            <button id="emailSubmitBtn" class="primary full" type="submit">Log in</button>
+          </form>
+          <div style="text-align:center;margin-top:14px"><button id="forgotPasswordBtn" class="linkbtn tiny" type="button">Forgot password?</button></div>
+        </div>
+        <div id="phonePanel" class="hidden">
+          <form id="phoneForm" novalidate>
+            <label for="phoneName">Display name</label><input id="phoneName" autocomplete="name" maxlength="80" placeholder="Your name — required for OTP sign-in">
+            <label for="phoneInput">Mobile number with country code</label><input id="phoneInput" type="tel" autocomplete="tel" placeholder="+919876543210" required>
+            <div id="recaptcha-container"></div>
+            <button id="sendOtpBtn" class="primary full" type="button">Send verification code</button>
+            <div id="otpWrap" class="hidden"><label for="otpInput">SMS verification code</label><input id="otpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter code from SMS"><button id="verifyOtpBtn" class="primary full" type="submit">Verify & continue</button><button id="changePhoneBtn" class="linkbtn tiny" style="display:block;margin:13px auto 0" type="button">Change number / resend</button></div>
+          </form>
+          <div class="phone-tip">Your number must be in international format (for example, +91…). Firebase reCAPTCHA and phone sign-in must be enabled for real SMS delivery.</div>
+        </div>
+        <div id="authStatus" class="status" role="status" aria-live="polite"></div>
+        <div id="configNotice" class="status error hidden" role="alert"></div>
+      </div>
+    </section>
+
+    <section id="appScreen" class="player-app hidden" aria-label="YouTube video player">
+      <header class="player-top">
+        <div class="player-welcome"><span class="player-logo">▶</span><div><div class="eyebrow">YOU’RE SIGNED IN</div><h2>Welcome to Pinklet Play</h2><p id="playerIdentity" class="muted">Your video space is ready.</p></div></div>
+        <button id="logoutBtn" class="secondary" type="button">Log out</button>
+      </header>
+      <nav class="app-nav" aria-label="Main pages">
+        <button class="nav-item active" data-page="homePage" type="button">⌂ <span>Home</span></button>
+        <button class="nav-item" data-page="musicPage" type="button">♫ <span>Music mode</span></button>
+        <button class="nav-item" data-page="discoverPage" type="button">✧ <span>Discover</span></button>
+        <button class="nav-item" data-page="settingsPage" type="button">⚙ <span>Settings</span></button>
+      </nav>
+      <section id="homePage" class="page-view active-page">
+      <section class="player-card">
+        <div class="player-heading"><div><div class="eyebrow">WATCH SOMETHING GOOD</div><h2>Find your next video</h2><p class="muted">Search YouTube and play videos right here.</p></div><span class="player-pill">✦ Pinklet player</span></div>
+        <form id="videoSearchForm" class="video-search"><input id="videoSearchInput" type="search" placeholder="Search videos, music, tutorials…" autocomplete="off" required><button id="videoSearchBtn" class="primary" type="submit">Search ↗</button></form>
+        <div id="videoStatus" class="status" role="status" aria-live="polite">Search YouTube to find a video.</div>
+        <div class="player-layout">
+          <div class="video-stage"><div id="playerPlaceholder" class="player-placeholder"><div class="play-orb">▶</div><h3>Your video plays here</h3><p>Choose a result below or search for something you like.</p></div><iframe id="youtubePlayer" class="hidden" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+          <aside class="results-panel"><div class="results-title"><strong>Search results</strong><span id="resultCount" class="muted tiny">0 videos</span></div><div id="videoResults" class="video-results"><div class="results-empty">Your search results will appear here.</div></div></aside>
+        </div>
+        <p class="tiny muted player-footnote">Videos are streamed from YouTube. Some videos may restrict embedding. Your API key is used by this browser for YouTube Data API searches.</p>
+      </section>
+      </section>
+      <section id="musicPage" class="page-view">
+        <div class="feature-page"><div class="eyebrow">LESS SCREEN, MORE SOUND</div><h2>Music mode <span class="music-note">♫</span></h2><p class="muted">A calmer player layout for songs, mixes and podcasts.</p>
+          <div class="music-card"><div class="music-art" id="musicArt"><span>♫</span><i></i><i></i><i></i><i></i><i></i></div><div class="music-meta"><div class="eyebrow">NOW PLAYING</div><h3 id="musicTitle">Pick a track to begin</h3><p id="musicSub" class="muted">Search YouTube on Home, then return here.</p><div class="music-actions"><button id="musicPlayBtn" class="primary" type="button">▶ Open player</button><button id="musicBackBtn" class="secondary" type="button">⌕ Find music</button></div></div></div>
+          <div class="info-note">ⓘ Music mode keeps the YouTube player available in a compact layout. Background playback depends on your browser, device, and YouTube’s playback rules; this webpage cannot guarantee playback after the screen locks.</div>
+        </div>
+      </section>
+      <section id="discoverPage" class="page-view"><div class="feature-page"><div class="eyebrow">YOUR NEXT OBSESSION</div><h2>Discover something new ✨</h2><p class="muted">Jump into a vibe and search YouTube.</p><div class="discovery-grid"><button class="discovery-card" data-query="lofi chill beats" type="button"><span>☁️</span><strong>Lo-fi & chill</strong><small>Soft beats for focus</small></button><button class="discovery-card" data-query="latest hindi songs" type="button"><span>🌸</span><strong>Hindi hits</strong><small>Popular Hindi music</small></button><button class="discovery-card" data-query="acoustic indie playlist" type="button"><span>🌙</span><strong>Indie nights</strong><small>Slow down a little</small></button><button class="discovery-card" data-query="workout music mix" type="button"><span>⚡</span><strong>Energy boost</strong><small>Move to the beat</small></button><button class="discovery-card" data-query="rain sounds for sleep" type="button"><span>🌧️</span><strong>Sleep sounds</strong><small>Rain and ambience</small></button><button class="discovery-card" data-query="live concert full performance" type="button"><span>🎤</span><strong>Live sessions</strong><small>Concert energy</small></button></div></div></section>
+      <section id="settingsPage" class="page-view"><div class="feature-page"><div class="eyebrow">MAKE IT YOURS</div><h2>Player settings ⚙</h2><p class="muted">Small tweaks for your listening experience.</p><div class="settings-list"><button id="settingsThemeBtn" class="setting-row" type="button"><span class="setting-icon">◐</span><span><strong>Appearance themes</strong><small>Choose from 10 color themes</small></span><b>→</b></button><div class="setting-row static-row"><span class="setting-icon">♫</span><span><strong>Music mode</strong><small>Compact layout for listening</small></span><button class="secondary mini" id="settingsMusicBtn" type="button">Open</button></div><div class="setting-row static-row"><span class="setting-icon">↗</span><span><strong>Background playback</strong><small>Depends on browser/device and YouTube rules</small></span><span class="setting-state">Browser controlled</span></div><div class="setting-row static-row"><span class="setting-icon">⚡</span><span><strong>Performance</strong><small>Lightweight transitions, lazy-loaded thumbnails, no animated background loops</small></span><span class="setting-state">Enabled</span></div></div><div class="info-note">This is a web player using YouTube’s official embed. It does not bypass YouTube Premium restrictions or force audio to continue when the operating system/browser stops it.</div></div></section>
+      <div id="miniPlayer" class="mini-player hidden"><span class="mini-art">♫</span><span class="mini-info"><strong id="miniTitle">Nothing playing</strong><small>Playback stays in the page while you browse</small></span><button id="miniNowPlaying" class="secondary mini" type="button">Now playing ↗</button></div>
+    </section>
+    <div id="globalStatus" class="status hidden" role="status" aria-live="polite"></div>
+    <div class="footer-note">Firebase Authentication · YouTube Data API · Your personal video & music space · 10 themes</div>
+  </main>
+
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAj1wPBCxHAcxh0yedHepDrME3SknYiVI",
+      authDomain: "new-app-7773.firebaseapp.com",
+      projectId: "new-app-7773",
+      storageBucket: "new-app-7773.firebasestorage.app",
+      messagingSenderId: "900035498679",
+      appId: "1:900035498679:web:9ad67f5ac9417f69dbf332",
+      measurementId: "G-QBVPXD1T1R"
+    };
+    const $ = (selector) => document.querySelector(selector);
+    const authScreen = $("#authScreen"), appScreen = $("#appScreen");
+    const authStatus = $("#authStatus"), configNotice = $("#configNotice");
+    let auth = null, db = null, currentUser = null, currentProfile = null;
+    let authMethod = "email", emailMode = "login", confirmationResult = null, recaptchaVerifier = null;
+    let stopConversations = null, stopMessages = null, conversationsCache = [], activeConversationId = null, activeOtherUid = null;
+    let otpRequestInProgress = false, authStateGeneration = 0;
+    const profileWork = new Map();
+    let authSdk = null, firestoreSdk = null;
+
+    function showStatus(element, message = "", type = "") {
+      element.textContent = message;
+      element.className = "status" + (message ? "" : " hidden") + (type ? " " + type : "");
+    }
+    function setBusy(button, busy, busyText = "Please wait…", normalText = "") {
+      if (busy) { if (!button.dataset.originalText) button.dataset.originalText = button.textContent; button.disabled = true; button.textContent = busyText; }
+      else { button.disabled = false; button.textContent = normalText || button.dataset.originalText || button.textContent; }
+    }
+    function escapeHtml(value = "") { return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
+    function initials(name = "?") {
+      const parts = String(name).trim().split(/\s+/).filter(Boolean);
+      return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : (parts[0] || "?").slice(0, 2)).toUpperCase();
+    }
+    function timestampMillis(ts) { return ts?.toMillis ? ts.toMillis() : 0; }
+    function shortDate(ts) {
+      if (!ts?.toDate) return "";
+      const date = ts.toDate();
+      return date.toDateString() === new Date().toDateString() ? date.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : date.toLocaleDateString([], {month:"short",day:"numeric"});
+    }
+    function fullTime(ts) { return ts?.toDate ? ts.toDate().toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "Sending…"; }
+    function authError(error) {
+      const code = error?.code || "";
+      const map = {
+        "auth/email-already-in-use":"This email already has an account. Log in instead.",
+        "auth/invalid-email":"Enter a valid email address.",
+        "auth/missing-email":"Enter your email address.",
+        "auth/missing-password":"Enter your password.",
+        "auth/weak-password":"Use a stronger password (at least 6 characters).",
+        "auth/invalid-credential":"Email/password or verification code is incorrect.",
+        "auth/invalid-login-credentials":"Email/password is incorrect, or the account does not exist.",
+        "auth/user-not-found":"No account was found. Create an account first.",
+        "auth/wrong-password":"Email/password is incorrect.",
+        "auth/user-disabled":"This account has been disabled in Firebase Authentication.",
+        "auth/too-many-requests":"Too many attempts. Wait a bit before trying again.",
+        "auth/invalid-phone-number":"Use international number format, for example +919876543210.",
+        "auth/missing-phone-number":"Enter your mobile number including the country code.",
+        "auth/quota-exceeded":"Firebase SMS quota exceeded. Check the Firebase plan and SMS region policy.",
+        "auth/captcha-check-failed":"reCAPTCHA failed or expired. Refresh it and try again.",
+        "auth/invalid-verification-code":"That SMS code is incorrect. Check it and try again.",
+        "auth/code-expired":"The SMS code expired. Request a new code.",
+        "auth/session-expired":"This OTP session expired. Request a new code.",
+        "auth/invalid-app-credential":"Firebase rejected the reCAPTCHA/app verification. Check the authorized domain and retry.",
+        "auth/operation-not-allowed":"This sign-in method is disabled. Enable Email/Password and Phone in Firebase Console → Authentication → Sign-in method.",
+        "auth/unauthorized-domain":"This website domain is not authorized. Add it under Firebase Console → Authentication → Settings → Authorized domains.",
+        "auth/invalid-api-key":"Firebase rejected the API key. Copy the Web API key for this same Firebase project.",
+        "auth/api-key-not-valid.-please-pass-a-valid-api-key.":"Firebase rejected the API key. Verify it in the same project's web-app settings.",
+        "auth/network-request-failed":"Network request failed. Check internet access, browser blockers, and try again.",
+        "auth/billing-not-enabled":"Firebase requires a billing plan for this operation. Check the project's plan and SMS requirements.",
+        "permission-denied":"Firestore denied access. Publish the included firestore.rules to this Firebase project.",
+        "failed-precondition":"Firestore setup or index is missing. Create the database and check the Firebase Console error.",
+        "unavailable":"Firebase is temporarily unavailable. Check your connection and try again.",
+        "resource-exhausted":"Firebase usage limit reached. Check project quotas.",
+        "deadline-exceeded":"The Firebase request timed out. Check your connection and retry."
+      };
+      if (map[code]) return map[code];
+      const message = error?.message || "Something went wrong. Please try again.";
+      return code ? `${message} (${code})` : message;
+    }
+    function normalizeEmail(value) { return value.trim().toLowerCase(); }
+    function normalizePhone(value) { return value.replace(/[\s().-]/g, "").trim(); }
+    function lookupId(type, value) { return `${type}:${value}`; }
+    function defaultName(user) { return user.displayName?.trim() || (user.email ? user.email.split("@")[0].slice(0,80) : "") || user.phoneNumber || "Pinglet user"; }
+    function showAuth() { authScreen.classList.remove("hidden"); appScreen.classList.add("hidden"); appScreen.classList.remove("chat-open"); }
+    function showApp() { authScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
+    function refreshAuthMethod() {
+      const useEmail = authMethod === "email";
+      $("#emailPanel").classList.toggle("hidden", !useEmail); $("#phonePanel").classList.toggle("hidden", useEmail);
+      $("#emailMethodBtn").classList.toggle("active", useEmail); $("#phoneMethodBtn").classList.toggle("active", !useEmail);
+      $("#authHeading").textContent = useEmail ? (emailMode === "login" ? "Welcome back" : "Create your account") : "Continue with mobile";
+      $("#authDescription").textContent = useEmail ? (emailMode === "login" ? "Sign in to tune into your own little world." : "Choose a display name and create your account.") : "Verify your mobile number with a one-time SMS code.";
+      $("#emailNameWrap").classList.toggle("hidden", emailMode !== "signup"); $("#loginModeBtn").classList.toggle("active", emailMode === "login"); $("#signupModeBtn").classList.toggle("active", emailMode === "signup");
+      $("#emailSubmitBtn").textContent = emailMode === "login" ? "Log in" : "Create account"; $("#forgotPasswordBtn").classList.toggle("hidden", emailMode !== "login");
+      showStatus(authStatus, "");
+    }
+    function renderIdentity() {
+      if (!currentUser) return;
+      const name = currentProfile?.displayName || defaultName(currentUser);
+      const contact = currentUser.email || currentUser.phoneNumber || "Signed in with Firebase";
+      const label = $("#playerIdentity");
+      if (label) label.textContent = name && name !== contact ? `${name} · ${contact}` : contact;
+    }
+    async function writeLookup(type, value, uid, displayName) {
+      if (!value) return;
+      await firestoreSdk.setDoc(firestoreSdk.doc(db, "userLookup", lookupId(type, value)), {uid, displayName, type, value, updatedAt: firestoreSdk.serverTimestamp()}, {merge:true});
+    }
+    function ensureProfile(user, preferredName = "") {
+      const previous = profileWork.get(user.uid) || Promise.resolve();
+      const work = previous.catch(() => {}).then(() => ensureProfileUnlocked(user, preferredName));
+      profileWork.set(user.uid, work);
+      return work.finally(() => { if (profileWork.get(user.uid) === work) profileWork.delete(user.uid); });
+    }
+    async function ensureProfileUnlocked(user, preferredName = "") {
+      const profileRef = firestoreSdk.doc(db, "users", user.uid);
+      const snapshot = await firestoreSdk.getDoc(profileRef);
+      const old = snapshot.exists() ? snapshot.data() : {};
+      const displayName = (preferredName || user.displayName || old.displayName || defaultName(user)).trim().slice(0,80) || "Pinglet user";
+      const email = user.email ? normalizeEmail(user.email) : null;
+      const phoneNumber = user.phoneNumber || null;
+      if (!snapshot.exists()) {
+        await firestoreSdk.setDoc(profileRef, {uid:user.uid,displayName,email,phoneNumber,createdAt:firestoreSdk.serverTimestamp(),updatedAt:firestoreSdk.serverTimestamp()});
+      } else if (old.displayName !== displayName || old.email !== email || old.phoneNumber !== phoneNumber) {
+        await firestoreSdk.updateDoc(profileRef, {displayName,email,phoneNumber,updatedAt:firestoreSdk.serverTimestamp()});
+      }
+      if (user.email) await writeLookup("email", normalizeEmail(user.email), user.uid, displayName);
+      if (user.phoneNumber) await writeLookup("phone", user.phoneNumber, user.uid, displayName);
+      currentProfile = {uid:user.uid,displayName,email,phoneNumber}; renderIdentity();
+      return currentProfile;
+    }
+    function clearRecaptcha() {
+      if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch (_) {} }
+      recaptchaVerifier = null; $("#recaptcha-container").replaceChildren();
+    }
+    function stopLiveListeners() {
+      if (stopConversations) stopConversations(); if (stopMessages) stopMessages();
+      stopConversations = null; stopMessages = null;
+    }
+    function renderConversationList() {
+      const list = $("#chatList");
+      if (!conversationsCache.length) { list.innerHTML = '<div class="chat-list-empty">No conversations yet.<br>Find someone above to start a chat.</div>'; return; }
+      list.innerHTML = conversationsCache.map(conv => {
+        const otherUid = (conv.participants || []).find(uid => uid !== currentUser?.uid) || "";
+        const name = conv.memberNames?.[otherUid] || "Pinglet user";
+        const last = conv.lastMessage || "Conversation started";
+        return `<button class="chat-item ${conv.id === activeConversationId ? "active" : ""}" type="button" data-conversation-id="${escapeHtml(conv.id)}"><span class="avatar">${escapeHtml(initials(name))}</span><span class="chat-meta"><span style="display:flex;justify-content:space-between;gap:8px"><span class="chat-name">${escapeHtml(name)}</span><span class="tiny muted">${escapeHtml(shortDate(conv.updatedAt))}</span></span><span class="chat-last">${escapeHtml(last)}</span></span></button>`;
+      }).join("");
+      list.querySelectorAll("[data-conversation-id]").forEach(button => button.addEventListener("click", () => { const conv = conversationsCache.find(item => item.id === button.dataset.conversationId); if (conv) openConversation(conv); }));
+    }
+    function startConversationListener(user) {
+      if (stopConversations) stopConversations();
+      // No orderBy here: avoids an unnecessary composite-index requirement.
+      const q = firestoreSdk.query(firestoreSdk.collection(db,"conversations"),firestoreSdk.where("participants","array-contains",user.uid));
+      stopConversations = firestoreSdk.onSnapshot(q, snapshot => {
+        conversationsCache = snapshot.docs.map(item => ({id:item.id,...item.data()})).sort((a,b) => timestampMillis(b.updatedAt)-timestampMillis(a.updatedAt));
+        renderConversationList();
+        if (activeConversationId) {
+          const updated = conversationsCache.find(conv => conv.id === activeConversationId);
+          if (updated) { const otherUid = updated.participants.find(uid => uid !== currentUser.uid) || ""; const name = updated.memberNames?.[otherUid] || "Pinglet user"; $("#activeChatName").textContent = name; $("#activeAvatar").textContent = initials(name); }
+        }
+      }, error => showStatus($("#contactStatus"), authError(error), "error"));
+    }
+    function openConversation(conv) {
+      if (!currentUser || !(conv.participants || []).includes(currentUser.uid)) return;
+      activeConversationId = conv.id; activeOtherUid = conv.participants.find(uid => uid !== currentUser.uid) || "";
+      const name = conv.memberNames?.[activeOtherUid] || "Pinglet user";
+      $("#chatPlaceholder").classList.add("hidden"); $("#activeChat").classList.remove("hidden");
+      $("#activeChatName").textContent = name; $("#activeAvatar").textContent = initials(name); $("#activeChatUid").textContent = `UID · ${activeOtherUid}`;
+      appScreen.classList.add("chat-open");
+      if (stopMessages) stopMessages();
+      $("#messageList").innerHTML = '<div class="date-note">Loading messages…</div>'; showStatus($("#messageStatus"), "");
+      const q = firestoreSdk.query(firestoreSdk.collection(db,"conversations",conv.id,"messages"),firestoreSdk.orderBy("createdAt","asc"),firestoreSdk.limit(500));
+      stopMessages = firestoreSdk.onSnapshot(q, snapshot => {
+        const area = $("#messageList");
+        if (!snapshot.docs.length) { area.innerHTML = '<div class="date-note">This is the start of your conversation 💗</div>'; return; }
+        area.innerHTML = snapshot.docs.map(item => { const msg = item.data(), mine = msg.senderId === currentUser.uid; return `<div class="bubble-row ${mine ? "mine" : ""}"><div class="bubble">${escapeHtml(msg.text || "")}<div class="bubble-time">${mine ? "You · " : ""}${escapeHtml(fullTime(msg.createdAt))}</div></div></div>`; }).join("");
+        area.scrollTop = area.scrollHeight;
+      }, error => showStatus($("#messageStatus"), authError(error), "error"));
+      renderConversationList();
+      setTimeout(() => $("#messageInput").focus(), 50);
+    }
+
+    $("#emailMethodBtn").addEventListener("click", () => { authMethod="email"; refreshAuthMethod(); });
+    $("#phoneMethodBtn").addEventListener("click", () => { authMethod="phone"; refreshAuthMethod(); });
+    $("#loginModeBtn").addEventListener("click", () => { emailMode="login"; refreshAuthMethod(); });
+    $("#signupModeBtn").addEventListener("click", () => { emailMode="signup"; refreshAuthMethod(); });
+
+    $("#emailAuthForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!auth || !authSdk || !firestoreSdk) return showStatus(authStatus,"Firebase is still loading. Please try again.","error");
+      const button=$("#emailSubmitBtn"), email=normalizeEmail($("#emailInput").value), password=$("#passwordInput").value, name=$("#emailName").value.trim();
+      if (!email || !password) return showStatus(authStatus,"Enter your email and password.","error");
+      if (emailMode === "signup" && !name) return showStatus(authStatus,"Enter a display name to create an account.","error");
+      if (password.length < 6) return showStatus(authStatus,"Password must be at least 6 characters.","error");
+      setBusy(button,true,emailMode === "signup" ? "Creating account…" : "Signing in…"); showStatus(authStatus,"");
+      try {
+        if (emailMode === "signup") {
+          const credential = await authSdk.createUserWithEmailAndPassword(auth,email,password);
+          await authSdk.updateProfile(credential.user,{displayName:name.slice(0,80)});
+          ensureProfile(credential.user,name).catch(error => console.warn("Optional Firestore profile save failed:", error));
+          showStatus(authStatus,"Account created successfully.","success");
+        } else {
+          const credential = await authSdk.signInWithEmailAndPassword(auth,email,password);
+          ensureProfile(credential.user,credential.user.displayName || "").catch(error => console.warn("Optional Firestore profile save failed:", error));
+          showStatus(authStatus,"Signed in successfully.","success");
+        }
+      } catch(error) { showStatus(authStatus,authError(error),"error"); }
+      finally { setBusy(button,false,"",emailMode === "login" ? "Log in" : "Create account"); }
+    });
+    $("#forgotPasswordBtn").addEventListener("click",async () => {
+      const email=normalizeEmail($("#emailInput").value); if(!email) return showStatus(authStatus,"Enter your email address first.","error");
+      try { await authSdk.sendPasswordResetEmail(auth,email); showStatus(authStatus,"If an account uses this email, a password-reset email has been sent.","success"); }
+      catch(error) { showStatus(authStatus,authError(error),"error"); }
+    });
+    $("#sendOtpBtn").addEventListener("click",async () => {
+      if(otpRequestInProgress) return;
+      const phone=normalizePhone($("#phoneInput").value), name=$("#phoneName").value.trim();
+      if(!name) return showStatus(authStatus,"Enter your display name before requesting an OTP.","error");
+      if(!/^\+[1-9]\d{7,14}$/.test(phone)) return showStatus(authStatus,"Enter your number in international format, e.g. +919876543210.","error");
+      if(!auth) return showStatus(authStatus,"Firebase is still loading. Please try again.","error");
+      otpRequestInProgress=true; const button=$("#sendOtpBtn"); setBusy(button,true,"Sending code…"); showStatus(authStatus,""); clearRecaptcha(); confirmationResult=null; $("#otpWrap").classList.add("hidden");
+      try {
+        auth.languageCode="en";
+        recaptchaVerifier=new authSdk.RecaptchaVerifier(auth,"recaptcha-container",{size:"normal","expired-callback":()=>showStatus(authStatus,"reCAPTCHA expired. Request the code again.","error")});
+        await recaptchaVerifier.render();
+        confirmationResult=await authSdk.signInWithPhoneNumber(auth,phone,recaptchaVerifier);
+        $("#otpWrap").classList.remove("hidden"); $("#otpInput").value=""; $("#otpInput").focus();
+        showStatus(authStatus,`Verification code sent to ${phone}.`,"success");
+      } catch(error) { confirmationResult=null; clearRecaptcha(); showStatus(authStatus,authError(error),"error"); }
+      finally { otpRequestInProgress=false; setBusy(button,false,"","Send verification code"); }
+    });
+    $("#phoneForm").addEventListener("submit",async event => {
+      event.preventDefault(); const code=$("#otpInput").value.trim(), name=$("#phoneName").value.trim();
+      if(!confirmationResult) return showStatus(authStatus,"Send a verification code first.","error");
+      if(!/^\d{4,8}$/.test(code)) return showStatus(authStatus,"Enter the verification code received by SMS.","error");
+      const button=$("#verifyOtpBtn"); setBusy(button,true,"Verifying…");
+      try {
+        const credential=await confirmationResult.confirm(code);
+        if(name && credential.user.displayName !== name) await authSdk.updateProfile(credential.user,{displayName:name.slice(0,80)});
+        ensureProfile(credential.user,name).catch(error => console.warn("Optional Firestore profile save failed:", error));
+        confirmationResult=null; clearRecaptcha(); showStatus(authStatus,"Mobile number verified. You are signed in.","success");
+      } catch(error) { showStatus(authStatus,authError(error),"error"); }
+      finally { setBusy(button,false,"","Verify & continue"); }
+    });
+    $("#changePhoneBtn").addEventListener("click",() => { confirmationResult=null; $("#otpWrap").classList.add("hidden"); $("#otpInput").value=""; clearRecaptcha(); const button=$("#sendOtpBtn"); button.disabled=false; button.textContent="Send verification code"; showStatus(authStatus,"You can now check the number and request a fresh code."); });
+
+    const YOUTUBE_API_KEY = "AIzaSyBrG4Bt3JftP4oaKl0Jx_wyLgf4LLcgfwg";
+    let selectedVideoId = "";
+    function playVideo(videoId, title) {
+      if (!videoId) return;
+      selectedVideoId = videoId;
+      const iframe = $("#youtubePlayer");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0`;
+      iframe.title = title || "YouTube video player";
+      iframe.classList.remove("hidden"); $("#playerPlaceholder").classList.add("hidden");
+      document.querySelectorAll(".video-result").forEach(item => item.classList.toggle("active", item.dataset.videoId === videoId));
+      showStatus($("#videoStatus"), `Now playing: ${title || "Selected video"}`, "success");
+    }
+    function renderVideoResults(items) {
+      const container = $("#videoResults");
+      $("#resultCount").textContent = `${items.length} video${items.length === 1 ? "" : "s"}`;
+      if (!items.length) { container.innerHTML = '<div class="results-empty">No videos found. Try another search.</div>'; return; }
+      container.innerHTML = items.map(item => {
+        const id = item.id?.videoId || "";
+        const title = item.snippet?.title || "Untitled video";
+        const channel = item.snippet?.channelTitle || "YouTube";
+        const thumb = item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url || "";
+        return `<button class="video-result ${id === selectedVideoId ? "active" : ""}" type="button" data-video-id="${escapeHtml(id)}" data-title="${escapeHtml(title)}"><img src="${escapeHtml(thumb)}" alt="" loading="lazy"><span><strong>${escapeHtml(title)}</strong><small>${escapeHtml(channel)}</small></span></button>`;
+      }).join("");
+      container.querySelectorAll(".video-result").forEach(button => button.addEventListener("click", () => playVideo(button.dataset.videoId, button.dataset.title)));
+    }
+    $("#videoSearchForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const term = $("#videoSearchInput").value.trim();
+      if (!term) return;
+      const button = $("#videoSearchBtn"); setBusy(button, true, "Searching…");
+      showStatus($("#videoStatus"), "Searching YouTube…");
+      try {
+        const params = new URLSearchParams({part:"snippet",type:"video",maxResults:"12",q:term,safeSearch:"moderate",key:YOUTUBE_API_KEY});
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
+        const data = await response.json();
+        if (!response.ok) {
+          const apiMessage = data?.error?.message || "YouTube search failed.";
+          if (response.status === 403) throw new Error(`${apiMessage} Check that YouTube Data API v3 is enabled, the key is valid, and its restrictions allow this website.`);
+          throw new Error(apiMessage);
+        }
+        renderVideoResults(data.items || []);
+        showStatus($("#videoStatus"), data.items?.length ? `Found ${data.items.length} videos for “${term}”. Select one to play.` : "No matching videos found.", data.items?.length ? "success" : "");
+      } catch(error) {
+        console.error("YouTube search error", error);
+        showStatus($("#videoStatus"), error.message || "Could not search YouTube. Check your connection and API key.", "error");
+      } finally { setBusy(button, false, "", "Search ↗"); }
+    });
+    const THEMES = [
+      {id:"rose",name:"Rose Garden",swatch:"linear-gradient(135deg,#ffc2df,#e85c9c)"},{id:"ocean",name:"Ocean Breeze",swatch:"linear-gradient(135deg,#9be5ff,#168bc2)"},{id:"lavender",name:"Lavender Dream",swatch:"linear-gradient(135deg,#d6c2ff,#8b65d6)"},{id:"forest",name:"Forest Calm",swatch:"linear-gradient(135deg,#a9e8bb,#2f9860)"},{id:"sunset",name:"Peach Sunset",swatch:"linear-gradient(135deg,#ffc49b,#ed7848)"},{id:"midnight",name:"Midnight",swatch:"linear-gradient(135deg,#554b91,#101321)"},{id:"mint",name:"Mint Fresh",swatch:"linear-gradient(135deg,#a2f0df,#20a995)"},{id:"gold",name:"Golden Hour",swatch:"linear-gradient(135deg,#ffe18a,#bf8a18)"},{id:"mono",name:"Minimal Mono",swatch:"linear-gradient(135deg,#fff,#333)"},{id:"cyber",name:"Cyber Neon",swatch:"linear-gradient(135deg,#00cdbb,#0c111c)"}
+    ];
+    function applyTheme(id){if(!THEMES.some(t=>t.id===id))id="rose";document.body.dataset.theme=id;document.querySelector('meta[name="theme-color"]')?.setAttribute("content",getComputedStyle(document.body).getPropertyValue("--bg").trim()||"#fff7fb");try{localStorage.setItem("pinklet-theme",id)}catch{};document.querySelectorAll(".theme-choice").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.themeId===id)));}
+    const themeGrid=$("#themeGrid");themeGrid.innerHTML=THEMES.map(t=>`<button type="button" class="theme-choice" data-theme-id="${t.id}" aria-pressed="false"><span class="theme-swatch" style="background:${t.swatch}"></span>${t.name}</button>`).join("");
+    let savedTheme="rose";try{savedTheme=localStorage.getItem("pinklet-theme")||"rose"}catch{}applyTheme(savedTheme);
+    $("#themeToggle").addEventListener("click",()=>{const open=$("#themeMenu").classList.toggle("hidden")===false;$("#themeToggle").setAttribute("aria-expanded",String(open));});
+    $("#closeThemeMenu").addEventListener("click",()=>{$("#themeMenu").classList.add("hidden");$("#themeToggle").setAttribute("aria-expanded","false")});
+    themeGrid.addEventListener("click",e=>{const b=e.target.closest("[data-theme-id]");if(!b)return;applyTheme(b.dataset.themeId)});
+    document.addEventListener("click",e=>{if(!e.target.closest(".theme-wrap")){$("#themeMenu").classList.add("hidden");$("#themeToggle").setAttribute("aria-expanded","false")}});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("#themeMenu").classList.add("hidden");$("#themeToggle").setAttribute("aria-expanded","false")}});
+    function openPage(id){document.querySelectorAll(".page-view").forEach(page=>page.classList.toggle("active-page",page.id===id));document.querySelectorAll(".nav-item").forEach(btn=>btn.classList.toggle("active",btn.dataset.page===id));if(id==="musicPage")syncMusicPage();}
+    document.querySelectorAll(".nav-item").forEach(btn=>btn.addEventListener("click",()=>openPage(btn.dataset.page)));
+    function currentVideoTitle(){const active=document.querySelector(".video-result.active");return active?.dataset.title||"Selected YouTube track";}
+    function syncMusicPage(){const title=currentVideoTitle();$("#musicTitle").textContent=selectedVideoId?title:"Pick a track to begin";$("#musicSub").textContent=selectedVideoId?"Your selected YouTube track is ready in the player.":"Search YouTube on Home, then return here.";$("#miniTitle").textContent=selectedVideoId?title:"Nothing playing";$("#miniPlayer").classList.toggle("hidden",!selectedVideoId);}
+    $("#musicPlayBtn").addEventListener("click",()=>{if(selectedVideoId){openPage("homePage");$("#youtubePlayer").scrollIntoView({behavior:"auto",block:"center"})}else openPage("homePage")});
+    $("#musicBackBtn").addEventListener("click",()=>{openPage("homePage");$("#videoSearchInput").focus({preventScroll:true})});
+    $("#settingsThemeBtn").addEventListener("click",()=>{$("#themeMenu").classList.remove("hidden");$("#themeToggle").setAttribute("aria-expanded","true")});
+    $("#settingsMusicBtn").addEventListener("click",()=>openPage("musicPage"));
+    document.querySelectorAll("[data-query]").forEach(btn=>btn.addEventListener("click",()=>{openPage("homePage");$("#videoSearchInput").value=btn.dataset.query;$("#videoSearchForm").requestSubmit()}));
+    $("#miniNowPlaying").addEventListener("click",()=>openPage("musicPage"));
+    const originalPlayVideo=playVideo;
+    playVideo=function(videoId,title){originalPlayVideo(videoId,title);syncMusicPage();};
+
+    $("#logoutBtn").addEventListener("click", async () => {
+      try { clearRecaptcha(); $("#youtubePlayer").src = ""; selectedVideoId = ""; await authSdk.signOut(auth); }
+      catch(error) { showStatus($("#globalStatus"), authError(error), "error"); }
+    });
+
+    async function bootFirebase() {
+      try {
+        showStatus($("#globalStatus"),"Connecting to Firebase…");
+        const [appModule, authModule, firestoreModule] = await Promise.all([
+          import("https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"),
+          import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js"),
+          import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js")
+        ]);
+        authSdk=authModule; firestoreSdk=firestoreModule;
+        const firebaseApp=appModule.initializeApp(firebaseConfig); auth=authModule.getAuth(firebaseApp); db=firestoreModule.getFirestore(firebaseApp);
+        try { await authModule.setPersistence(auth,authModule.browserLocalPersistence); } catch(error) { console.warn("Auth persistence setting failed",error); }
+        authModule.onAuthStateChanged(auth,async user=>{
+          const generation=++authStateGeneration; currentUser=user;
+          if(!user){stopLiveListeners();currentProfile=null;conversationsCache=[];activeConversationId=null;activeOtherUid=null;$("#youtubePlayer").src="";$("#videoResults").innerHTML='<div class="results-empty">Your search results will appear here.</div>';$("#resultCount").textContent="0 videos";clearRecaptcha();showAuth();return;}
+          showApp();
+          $("#playerIdentity").textContent = user.displayName || user.email || user.phoneNumber || "Signed in with Firebase";
+          showStatus($("#globalStatus"),"");
+          // The video player only needs Firebase Authentication. Saving an optional profile must not block access to videos.
+          ensureProfile(user,user.displayName||"").catch(error => console.warn("Optional Firestore profile save failed:", error));
+        });
+        showStatus($("#globalStatus"),"");
+      } catch(error) {
+        console.error("Firebase initialization failed",error);
+        showStatus(configNotice,`Could not load Firebase SDK or initialize this project. Open this page from a hosted site (not file://), check the internet connection, and verify firebaseConfig. Details: ${error?.message || error}`,"error");
+        configNotice.classList.remove("hidden");
+        ["#emailSubmitBtn","#sendOtpBtn","#verifyOtpBtn","#forgotPasswordBtn"].forEach(selector=>{const element=$(selector);if(element)element.disabled=true;});
+        showStatus($("#globalStatus"),"Firebase connection failed. See the setup message above.","error");
+      }
+    }
+    refreshAuthMethod(); bootFirebase();
+  </script>
+</body>
+</html>
